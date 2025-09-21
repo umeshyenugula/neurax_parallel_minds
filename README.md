@@ -1,6 +1,3 @@
-Here’s a **neatly structured project documentation** for your **NH07 - Parallel Minds: Medical Report & Patient Management System** 👇
-
----
 
 # **NH07 - Parallel Minds**
 
