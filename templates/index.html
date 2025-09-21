@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LithoLens</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(-20deg, #ffa800, #11026c);
+      color: white;
+      overflow: hidden; /* prevent scrolling */
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0 5%;
+      position: relative;
+      flex-wrap: wrap;
+    }
+
+    .hero-text {
+      flex: 1;
+      z-index: 1;
+      animation: fadeInUp 2s ease;
+      min-width: 280px;
+    }
+
+    .hero-text h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .hero-text p.tagline {
+      font-size: 1.2rem;
+      color: #56ccf2;
+      margin: 15px 0 30px;
+      font-style: italic;
+      font-weight: 600;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #031071, #2f80ed);
+      padding: 14px 30px;
+      border-radius: 30px;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 20px rgba(47, 128, 237, 0.4);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 30px rgba(86, 204, 242, 0.8);
+    }
+
+    .hero-visual {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 2s ease;
+      min-width: 250px;
+    }
+
+    .hero-visual img {
+      max-width: 90%;
+      height: auto;
+      filter: drop-shadow(0px 0px 30px rgba(86, 204, 242, 0.6));
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(86, 204, 242, 0.4), transparent);
+      animation: moveBlobs 5s infinite alternate ease-in-out;
+      z-index: 0;
+    }
+
+    .blob1 {
+      width: 250px;
+      height: 250px;
+      top: 5%;
+      left: -10%;
+    }
+
+    .blob2 {
+      width: 300px;
+      height: 300px;
+      bottom: -15%;
+      right: -10%;
+    }
+
+    @keyframes moveBlobs {
+      from { transform: translateY(0) translateX(0); }
+      to { transform: translateY(-40px) translateX(40px); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(100px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* 🔹 Popup Styles */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .popup-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .popup-overlay.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .popup-content {
+      background: linear-gradient(135deg, #11026c, #ffa800);
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      color: white;
+      width: 90%;
+      max-width: 400px;
+      animation: fadeInUp 0.5s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .popup-content h2 {
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .role-options {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .role-options a {
+      text-decoration: none;
+      color: white;
+      font-weight: 600;
+      transition: transform 0.3s;
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .role-options a:hover {
+      transform: scale(1.05);
+    }
+
+    .role-options img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #56ccf2;
+      margin-bottom: 10px;
+      transition: all 0.3s;
+    }
+
+    .role-options a:hover img {
+      box-shadow: 0 0 20px #56ccf2;
+    }
+
+    /* Close Button */
+    .close-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      position: absolute;
+      top: 15px;
+      right: 20px;
+    }
+
+    /* 🔹 Responsive Adjustments */
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column; /* stack text above image */
+        text-align: center;
+        padding: 20px;
+      }
+
+      .hero-text {
+        order: 1; /* text first */
+      }
+
+      .hero-visual {
+        order: 2; /* image below text */
+        margin-top: 20px;
+      }
+
+      .hero-text h1 {
+        font-size: 2.2rem;
+      }
+
+      .hero-text p.tagline {
+        font-size: 1rem;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        font-size: 0.9rem;
+      }
+
+      .hero-visual img {
+        max-width: 70%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-text h1 {
+        font-size: 1.8rem;
+      }
+
+      .popup-content h2 {
+        font-size: 1.3rem;
+      }
+
+      .role-options img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  
+  <section class="hero">
+    <div class="hero-text">
+      <h1>LithoLens</h1>
+      <p class="tagline">“Detect. Understand. Prevent.”</p>
+      <button class="btn" onclick="openPopup()">Get Started</button>
+    </div>
+
+    <div class="hero-visual">
+      <img src="https://media-public.canva.com/318xM/MAFanj318xM/1/tl.png" alt="Kidney Illustration">
+    </div>
+  </section>
+
+  <!-- 🔹 Popup -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-content" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="closePopup()">✖</button>
+      <h2>Continue as...</h2>
+      <div class="role-options">
+        <a href="/login">
+          <img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Doctor">
+          <div>Doctor</div>
+        </a>
+        <a href="/punlogin">
+          <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" alt="Patient">
+          <div>Patient</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openPopup() {
+      let popup = document.getElementById("popup");
+      popup.classList.add("show");
+      popup.classList.remove("hide");
+    }
+
+    function closePopup() {
+      let popup = document.getElementById("popup");
+      popup.classList.add("hide");
+      setTimeout(() => {
+        popup.classList.remove("show");
+      }, 400); // matches transition duration
+    }
+
+    // Close when clicking outside popup
+    document.getElementById("popup").addEventListener("click", function() {
+      closePopup();
+    });
+  </script>
+</body>
+</html>

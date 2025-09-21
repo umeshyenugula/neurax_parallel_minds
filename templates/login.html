@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LithoLens — Login</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --brand-dark: #11026c;
+      --accent: #ffa800;
+      --bg1: linear-gradient(135deg, #11026c, #ffa800);
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system;
+    }
+
+    body {
+      background: var(--bg1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 12px 40px rgba(2, 6, 23, 0.18);
+      animation: fadeIn .6s both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      width: 100%;
+    }
+
+    .btn-accent:hover {
+      background: #ff8c00;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 0.95rem;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .flash-message {
+      color: #dc2626;
+      font-size: 0.95rem;
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    #error-msg {
+      color: #dc2626;
+      font-size: 0.95rem;
+      margin-top: 8px;
+      display: none;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-card">
+    <img src="https://tinyurl.com/2khd65ex" alt="LithoLens Logo" style="display:block;margin:0 auto 12px auto;width:72px;height:72px;" />
+    <h2 style="text-align:center;color:var(--brand-dark);font-weight:700;margin-bottom:14px;">LithoLens Login</h2>
+
+    <!-- Flash messages from Flask -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-message">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Login Form -->
+    <form id="loginForm" method="POST" action="{{ url_for('login') }}" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input id="username" name="username" type="text" class="form-control" placeholder="xyz" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          class="form-control"
+          placeholder="********"
+          required
+          minlength="8"
+        />
+        <div class="form-text">Password must be at least 8 characters long.</div>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn-accent">Login</button>
+      </div>
+
+      <p id="error-msg">Please fill in all fields correctly.</p>
+    </form>
+
+    <p class="muted">Secure Access for Healthcare Professionals</p>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('error-msg');
+
+    loginForm.addEventListener('submit', function (e) {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (username === '' || password.length < 8) {
+        e.preventDefault(); // Prevent form submission
+        errorMsg.style.display = 'block';
+      } else {
+        errorMsg.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+
+</html>

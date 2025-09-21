@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LithoLens — Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --brand-dark: #11026c;
+      --accent: #ffa800;
+      --bg: #f5f7fa;
+      --panel: #fff;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar fixed */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      background: linear-gradient(180deg, var(--brand-dark), #3a1e9f);
+      color: #fff;
+      padding: 2rem 1.5rem;
+      flex-shrink: 0;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 0.5rem;
+      color: #e0e7ff;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+      color: #fff;
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Main content shifted right */
+    main {
+      flex: 1;
+      padding: 2rem;
+      margin-left: 280px;
+    }
+
+    .section-card {
+      background: var(--panel);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(16, 24, 40, 0.04);
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      background: var(--panel);
+      box-shadow: 0 8px 24px rgba(16, 24, 40, .04);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      color: var(--brand-dark);
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-accent:hover {
+      background: #ffbb33;
+    }
+
+    .btn-clear {
+      background: #e5e7eb;
+      color: #374151;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-clear:hover {
+      background: #d1d5db;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">LithoLens</div>
+      <nav class="flex flex-col gap-2">
+        <a href="/dashboard" class="nav-item active">Home</a>
+        <a href="/3d-view" class="nav-item">3D Visualization</a>
+        <a href="/patientsview" class="nav-item">Recent Patients</a>
+        <a href="/logout" class="nav-item">Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main>
+      <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Welcome, {{name}}</h1>
+      <p class="text-gray-500 mb-8">Your dashboard at a glance. Let's get to work! 👋</p>
+
+      <!-- Stats -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="stat-card">
+          <h5 class="text-lg font-semibold text-gray-700 mb-2">Patients Today</h5>
+          <div class="text-3xl font-bold text-amber-500">{{pn}}</div>
+        </div>
+        <div class="stat-card">
+          <h5 class="text-lg font-semibold text-gray-700 mb-2">Reports Generated</h5>
+          <div class="text-3xl font-bold text-amber-500">{{rg}}</div>
+        </div>
+      </section>
+
+      <!-- Add patient form -->
+      <section class="section-card">
+        <h3 class="text-xl font-bold text-gray-700 mb-4">Add New Patient</h3>
+        <form id="patientForm" enctype="multipart/form-data" method="post">
+          <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block font-semibold text-gray-700">Full Name *</label>
+              <input type="text" name="full_name" class="form-control w-full border rounded p-2" required>
+            </div>
+            <div>
+              <label class="block font-semibold text-gray-700">Age *</label>
+              <input type="number" name="age" min="1" max="100" class="form-control w-full border rounded p-2" required>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block font-semibold text-gray-700">Gender *</label>
+              <select name="gender" class="form-control w-full border rounded p-2" required>
+                <option value="">Select...</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Non-binary</option>
+                <option>Prefer not to say</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-gray-700">Phone Number *</label>
+              <input type="tel" name="phone" class="form-control w-full border rounded p-2" placeholder="+1 123 456 7890"
+                pattern="^\+?[0-9\s\-]{7,15}$" required>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="block font-semibold text-gray-700">Email *</label>
+            <input type="email" name="email" class="form-control w-full border rounded p-2" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="block font-semibold text-gray-700">Address *</label>
+            <textarea name="address" class="form-control w-full border rounded p-2" rows="2" required></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label class="block font-semibold text-gray-700">Insurance (Optional)</label>
+            <input type="text" name="insurance" class="form-control w-full border rounded p-2">
+          </div>
+
+          <div class="mb-6">
+            <h4 class="text-lg font-bold text-gray-700 mb-2">Upload Medical Imaging *</h4>
+            <p class="text-gray-500 text-sm mb-3">Drag & drop DICOM, PNG, JPEG, or PDF (max 100MB)</p>
+            <input type="file" name="medical_images" required class="mt-2 block w-full text-gray-700
+          file:mr-4 file:py-2 file:px-4
+          file:rounded-full file:border-0
+          file:text-sm file:font-semibold
+          file:bg-blue-50 file:text-blue-700
+          hover:file:bg-blue-100" multiple>
+          </div>
+
+          <div class="flex gap-4">
+            <button type="submit" class="btn-accent">Submit</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-lg max-w-3xl w-full p-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">Scanned Kidney Report</h2>
+
+      <!-- Kidney Images -->
+      <div id="modalImagesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- Images dynamically inserted here -->
+      </div>
+
+      <!-- Summary -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Findings</h3>
+        <p id="findingsText" class="text-gray-600">
+          <!-- Filled dynamically -->
+        </p>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-between">
+        <div class="flex gap-3">
+          <button class="btn-accent"><a href="/doctor-report">Doctor Report</a></button>
+          <button class="btn-accent"><a href="/patient-report">Patient Report</a></button>
+        </div>
+        <button id="closeModal" class="btn-clear">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const form = document.getElementById('patientForm');
+  const modal = document.getElementById('reportModal');
+  const closeModal = document.getElementById('closeModal');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const fileInput = form.querySelector('input[type="file"]');
+    if (!fileInput.files.length) {
+      alert("Please upload at least one medical imaging file.");
+      return;
+    }
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('/submit-patient', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        alert('Server error, please try again.');
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Clear previous images
+        const imagesContainer = modal.querySelector('#modalImagesContainer');
+        imagesContainer.innerHTML = '';
+
+        // Show detected images returned by backend
+        data.detected_images.forEach(url => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Kidney Scan';
+          img.className = 'rounded-lg shadow-md max-h-64 object-contain';
+          imagesContainer.appendChild(img);
+        });
+
+        // Update findings text
+        modal.querySelector('#findingsText').textContent = data.findings;
+
+        // Show modal
+        modal.classList.remove('hidden');
+
+        // Reset form
+        form.reset();
+      } else {
+        alert(data.message || "Submission failed.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error submitting form.");
+    }
+  });
+
+  closeModal.addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+    }
+  });
+</script>
+
+</body>
+
+</html>

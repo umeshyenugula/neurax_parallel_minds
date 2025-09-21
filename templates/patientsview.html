@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LithoLens — Recent Patients</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand-dark: #11026c;
+      --accent: #ffa800;
+      --bg: #f5f7fa;
+      --panel: #fff;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      margin: 0;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar fixed */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      background: linear-gradient(180deg, var(--brand-dark), #3a1e9f);
+      color: #fff;
+      padding: 2rem 1.5rem;
+      flex-shrink: 0;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      overflow-y: auto;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 0.5rem;
+      color: #e0e7ff;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+      color: #fff;
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Main content shifted right */
+    main {
+      flex: 1;
+      padding: 2rem;
+      margin-left: 280px;
+    }
+
+    /* Custom buttons */
+    .btn-accent {
+      background: var(--accent);
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      color: var(--brand-dark);
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-accent:hover {
+      background: #ffbb33;
+    }
+
+    .btn-clear {
+      background: #e5e7eb;
+      color: #374151;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-clear:hover {
+      background: #d1d5db;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">LithoLens</div>
+      <nav class="flex flex-col gap-2">
+        <a href="/dashboard" class="nav-item ">Home</a>
+        <a href="/3d-view" class="nav-item">3D Visualization</a>
+        <a href="/patientsview" class="nav-item active">Recent Patients</a>
+        <a href="/logout" class="nav-item">Logout</a>
+      </nav>
+    </aside>
+
+    <main>
+      <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Recent Patients</h1>
+
+      <!-- Search Bar -->
+      <div class="flex flex-col md:flex-row items-center mb-6 gap-4">
+        <input type="text" id="searchName" class="rounded-lg shadow-sm border px-4 py-2 w-full md:w-auto" placeholder="Search by name...">
+        <input type="date" id="searchDate" class="rounded-lg shadow-sm border px-4 py-2 w-full md:w-auto">
+        <div class="flex gap-2 w-full md:w-auto">
+          <button id="searchBtn" class="btn-accent flex-1 md:flex-none">Search</button>
+          <button id="clearBtn" class="btn-clear flex-1 md:flex-none">Clear</button>
+        </div>
+      </div>
+
+      <!-- Patient Table -->
+      <div class="overflow-x-auto shadow-lg rounded-xl">
+        <table class="min-w-full border-collapse">
+          <thead class="bg-[#3a1e9f] text-white text-left">
+            <tr>
+              <th class="py-3 px-4">Patient ID</th>
+              <th class="py-3 px-4">Name</th>
+              <th class="py-3 px-4">Age</th>
+              <th class="py-3 px-4">Gender</th>
+              <th class="py-3 px-4">Date of Examination</th>
+              <th class="py-3 px-4">Phone Number</th>
+              <th class="py-3 px-4 text-center">Report</th>
+            </tr>
+          </thead>
+          <tbody id="patientsTable" class="divide-y divide-gray-200 bg-white">
+            {% for patient in patients %}
+            <tr class="hover:bg-gray-50">
+              <td class="py-3 px-4">{{ patient.patient_id }}</td>
+              <td class="py-3 px-4">{{ patient.full_name }}</td>
+              <td class="py-3 px-4">{{ patient.age }}</td>
+              <td class="py-3 px-4">{{ patient.gender }}</td>
+              <td class="py-3 px-4">{{ patient.submitted_at }}</td>
+              <td class="py-3 px-4">{{ patient.phone }}</td>
+              <td class="py-3 px-4 text-center">
+                <button class="btn-accent text-sm px-3 py-1 view-report" data-patient-id="{{ patient.patient_id }}">View Report</button>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" class="text-center py-4">No patients found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- No results message -->
+      <p id="noResults" class="hidden text-center text-gray-600 mt-6">No patients found.</p>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">Patient Report</h2>
+      <p class="mb-2"><strong>No. of Stones:</strong> <span id="stonesCount"></span></p>
+      <p class="mb-2"><strong>Size (in mm):</strong> <span id="stoneSize"></span></p>
+      <p class="mb-4"><strong>Location:</strong> <span id="stoneLocation"></span></p>
+      <div class="text-right">
+        <button id="closeModal" class="btn-clear">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const searchBtn = document.getElementById('searchBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const searchName = document.getElementById('searchName');
+    const searchDate = document.getElementById('searchDate');
+    const patientsTable = document.getElementById('patientsTable');
+    const noResults = document.getElementById('noResults');
+
+    const modal = document.getElementById('reportModal');
+    const closeModal = document.getElementById('closeModal');
+    const stonesCount = document.getElementById('stonesCount');
+    const stoneSize = document.getElementById('stoneSize');
+    const stoneLocation = document.getElementById('stoneLocation');
+
+    function filterPatients() {
+      const nameFilter = searchName.value.trim().toLowerCase();
+      const dateFilter = searchDate.value.trim();
+
+      let found = false;
+
+      Array.from(patientsTable.rows).forEach(row => {
+        const name = row.cells[1].textContent.toLowerCase();
+        const date = row.cells[4].textContent.trim();
+
+        const matchesName = !nameFilter || name.includes(nameFilter);
+        const matchesDate = !dateFilter || date === dateFilter;
+
+        if (matchesName && matchesDate) {
+          row.style.display = '';
+          found = true;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      noResults.classList.toggle('hidden', found);
+    }
+
+    searchBtn.addEventListener('click', filterPatients);
+
+    clearBtn.addEventListener('click', () => {
+      searchName.value = '';
+      searchDate.value = '';
+      Array.from(patientsTable.rows).forEach(row => row.style.display = '');
+      noResults.classList.add('hidden');
+    });
+
+    // Report modal logic
+    document.querySelectorAll('.view-report').forEach(button => {
+      button.addEventListener('click', () => {
+        // Fetch data from the server (use your actual server endpoint)
+        const stones = Math.floor(Math.random() * 3) + 1; // 1 to 3 stones
+        const size = Math.floor(Math.random() * 15) + 5; // 5 to 20 mm
+        const location = "Left Kidney - Upper Pole"; // Example location
+
+        stonesCount.textContent = stones;
+        stoneSize.textContent = size;
+        stoneLocation.textContent = location;
+
+        modal.classList.remove('hidden');
+      });
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+
+</html>

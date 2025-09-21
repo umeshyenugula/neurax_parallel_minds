@@ -1,0 +1,41 @@
+{
+    "detected": true,
+    "stones": [
+        {
+            "stone_id": 1,
+            "confidence": 0.669,
+            "stone_size_mm": 5.64,
+            "location": "left kidney",
+            "bbox": [
+                269.64,
+                220.02,
+                280.91,
+                230.43
+            ]
+        },
+        {
+            "stone_id": 2,
+            "confidence": 0.454,
+            "stone_size_mm": 6.54,
+            "location": "left kidney",
+            "bbox": [
+                283.95,
+                220.19,
+                297.03,
+                232.71
+            ]
+        },
+        {
+            "stone_id": 3,
+            "confidence": 0.413,
+            "stone_size_mm": 5.93,
+            "location": "left kidney",
+            "bbox": [
+                284.86,
+                222.39,
+                296.72,
+                231.68
+            ]
+        }
+    ]
+}

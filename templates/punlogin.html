@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Report Summary</title>
+
+  <!-- Preload & Load Bootstrap -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts (Montserrat) -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #11026c, #ffa800);
+      color: white;
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      max-width: 700px;
+      backdrop-filter: blur(6px);
+    }
+
+    h1 {
+      font-weight: 800;
+      margin-bottom: 25px;
+      font-size: 1.9rem;
+    }
+
+    .upload-box {
+      display: inline-block;
+      padding: 10px 20px;
+      border: 2px solid #56ccf2;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      color: white;
+      background: transparent;
+      margin-bottom: 10px;
+    }
+
+    .upload-box:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #56ccf2;
+    }
+
+    .upload-box input[type="file"] {
+      display: none;
+    }
+
+    .file-name {
+      margin-left: 10px;
+      font-size: 0.9rem;
+      color: #e0e0e0;
+      font-style: italic;
+    }
+
+    .btn-custom {
+      background: linear-gradient(45deg, #031071, #2f80ed);
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: none;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 20px rgba(47, 128, 237, 0.4);
+      width: auto;
+      min-width: 160px;
+    }
+
+    .btn-custom:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 30px rgba(86, 204, 242, 0.8);
+    }
+
+    @media (max-width: 576px) {
+      .btn-custom {
+        width: 100%;
+        min-width: unset;
+      }
+    }
+
+    .kidney-img {
+      max-width: 100%;
+      height: auto;
+      filter: drop-shadow(0px 0px 15px rgba(86, 204, 242, 0.6));
+    }
+
+    .summary-section {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .summary-box {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 15px;
+      border-radius: 15px;
+      font-size: 0.95rem;
+    }
+
+    .branding {
+      position: absolute;
+      bottom: 10px;
+      right: 15px;
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    .branding b {
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* ---------------- Chatbot Styles ---------------- */
+    #chatbot-widget {
+      position: fixed;
+      bottom: 40px;
+      right: 20px;
+      z-index: 1000;
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    .chatbot-toggle {
+      background: var(--accent, #11026c);
+      color: #fff;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      transition: transform 0.2s ease;
+    }
+
+    .chatbot-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .chatbot-window {
+      width: 320px;
+      height: 420px;
+      background: #f5f7fa;
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(2, 6, 23, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .chatbot-header {
+      background: var(--brand-dark, #11026c);
+      color: #fff;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .chatbot-header button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      background: #eef1f7;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chatbot-message {
+      display: flex;
+      width: 100%;
+    }
+
+    .chatbot-message.bot {
+      justify-content: flex-start;
+    }
+
+    .chatbot-message.user {
+      justify-content: flex-end;
+    }
+
+    .chatbot-bubble {
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      max-width: 75%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .chatbot-message.bot .chatbot-bubble {
+      background: #fff;
+      color: #11026c;
+      border: 1px solid #ddd;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chatbot-message.user .chatbot-bubble {
+      background: var(--accent, #ffa800);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chatbot-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+      background: #fff;
+    }
+
+    .chatbot-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .chatbot-input button {
+      background: var(--brand-dark, #11026c);
+      border: none;
+      color: #fff;
+      padding: 0 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .chatbot-input button:hover {
+      background: #2a0d99;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ---------------- Loading Spinner ---------------- */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(17, 2, 108, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      display: none;
+    }
+
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #ffa800;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container text-center">
+    <h1>Upload Your Report</h1>
+    <form id="reportForm" class="mb-4" action="/getimage" enctype="multipart/form-data" method="POST">
+      <label class="upload-box">
+        Choose File
+        <input type="file" id="reportUpload" accept=".pdf,.jpg,.png,.jpeg,.doc,.docx" required>
+      </label>
+      <span id="fileName" class="file-name">No file chosen</span>
+      <br>
+      <button type="submit" class="btn-custom" id="submitBtn" disabled>Submit</button>
+    </form>
+    <div id="summarySection" class="summary-section" style="display:none;">
+      <h2>Report Summary</h2>
+      <div class="summary-box text-start">
+        <h4>Detected Images:</h4>
+        <div id="detectedImages"></div>
+
+        <h4>Summary:</h4>
+        <p id="reportSummary"></p>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered text-center">
+      <div class="modal-content p-4 bg-dark text-white rounded-4">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Yes_Check_Circle.svg/120px-Yes_Check_Circle.svg.png"
+          alt="Success" style="width:120px; height:120px; margin: auto; border-radius: 100%;">
+        <h5 class="mt-3">File Uploaded Successfully!</h5>
+      </div>
+    </div>
+  </div>
+  <!-- AI Voice Over Modal -->
+  <div class="modal fade" id="languageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered text-center">
+      <div class="modal-content p-4 bg-dark text-white rounded-4">
+        <h5>Select Language for Voice</h5>
+        <div class="d-flex justify-content-around mt-3">
+          <button id="langEnglish" class="btn btn-primary">English</button>
+          <button id="langTelugu" class="btn btn-success">తెలుగు</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keep just one voice modal -->
+  <div class="modal fade" id="voiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered text-center">
+      <div class="modal-content p-4 bg-dark text-white rounded-4">
+        <img
+          src="https://static.vecteezy.com/system/resources/previews/023/093/053/non_2x/artificial-intelligence-robot-chatbot-ai-chatbot-concept-colored-icon-vector.jpg"
+          alt="AI Agent" style="width:150px; height:150px; margin: auto; border-radius: 50%;">
+        <div style="margin-top: 20px;">
+          <img src="https://i.gifer.com/7efs.gif" alt="Speaking Animation" style="width:80px; height:80px;">
+        </div>
+        <h5 class="mt-3">Getting AI Voice...</h5>
+        <audio id="aiVoiceAudio"></audio> <!-- empty src, will set dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <div class="branding">Powered by <b>LithoLens</b></div>
+
+  <div id="chatbot-widget">
+    <div class="chatbot-toggle">💬</div>
+    <div class="chatbot-window hidden">
+      <div class="chatbot-header">
+        <span>LithoLens Assistant</span>
+        <button id="chatbot-close">✖</button>
+      </div>
+      <div class="chatbot-messages" id="chatbot-messages">
+        <div class="chatbot-message bot">
+          <div class="chatbot-bubble">👋 Hello! How can I help you today?</div>
+        </div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="chatbot-input-field" placeholder="Type your message..." />
+        <button id="chatbot-send">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      const fileInput = document.getElementById("reportUpload");
+      const fileNameDisplay = document.getElementById("fileName");
+      const submitBtn = document.getElementById("submitBtn");
+      const loadingOverlay = document.getElementById("loadingOverlay");
+
+      fileInput.addEventListener("change", function () {
+        if (fileInput.files.length > 0) {
+          fileNameDisplay.textContent = fileInput.files[0].name;
+          submitBtn.disabled = false;
+        } else {
+          fileNameDisplay.textContent = "No file chosen";
+          submitBtn.disabled = true;
+        }
+      });
+
+      document.getElementById("reportForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (!fileInput.files.length) {
+          alert("Please upload a report before submitting.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("medical_images", fileInput.files[0]);
+
+        // Show loader
+        loadingOverlay.style.display = "flex";
+
+        fetch("/getimage", { method: "POST", body: formData })
+          .then(res => res.json())
+          .then(data => {
+            // Hide loader
+            loadingOverlay.style.display = "none";
+
+            if (!data.success) {
+              alert("Upload failed: " + data.message);
+              return;
+            }
+
+            // Show success modal
+            const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+            successModal.show();
+            setTimeout(() => {
+              successModal.hide();
+              document.getElementById("summarySection").style.display = "block";
+            }, 2000);
+
+            // Update summary text
+            document.getElementById("reportSummary").innerText = data.findings;
+
+            // Display detected images
+            const imgContainer = document.getElementById("detectedImages");
+            imgContainer.innerHTML = "";
+            data.detected_images.forEach(url => {
+              const img = document.createElement("img");
+              img.src = url;
+              img.className = "kidney-img mb-3";
+              imgContainer.appendChild(img);
+            });
+
+            // Remove previous buttons if exist
+            const oldButtons = document.querySelectorAll(".summary-section .btn-custom");
+            oldButtons.forEach(btn => btn.remove());
+
+            // AI Voice button
+            const voiceBtn = document.createElement("button");
+            voiceBtn.className = "btn-custom mt-3";
+            voiceBtn.innerText = "AI Voice Over";
+            document.getElementById("summarySection").appendChild(voiceBtn);
+
+            voiceBtn.addEventListener("click", () => {
+              const languageModal = new bootstrap.Modal(document.getElementById("languageModal"));
+              languageModal.show();
+
+              const voiceModal = new bootstrap.Modal(document.getElementById("voiceModal"));
+              const audio = document.getElementById("aiVoiceAudio");
+
+              function playVoice(language) {
+                if (language === "english") audio.src = data.english_audio;
+                else if (language === "telugu") audio.src = data.telugu_audio;
+
+                languageModal.hide();
+                voiceModal.show();
+                audio.currentTime = 0;
+                audio.play();
+                audio.onended = () => voiceModal.hide();
+              }
+
+              document.getElementById("langEnglish").onclick = () => playVoice("english");
+              document.getElementById("langTelugu").onclick = () => playVoice("telugu");
+            });
+          })
+          .catch(err => {
+            // Hide loader if error
+            loadingOverlay.style.display = "none";
+            alert("Error: " + err);
+          });
+      });
+
+      // Chatbot initialization
+      function initChatbot() {
+        const toggleBtn = document.querySelector(".chatbot-toggle");
+        const chatWindow = document.querySelector(".chatbot-window");
+        const closeBtn = document.getElementById("chatbot-close");
+        const sendBtn = document.getElementById("chatbot-send");
+        const inputField = document.getElementById("chatbot-input-field");
+        const messagesContainer = document.getElementById("chatbot-messages");
+
+        function createMessage(type, text) {
+          const msg = document.createElement("div");
+          msg.className = `chatbot-message ${type}`;
+          const bubble = document.createElement("div");
+          bubble.className = "chatbot-bubble";
+          bubble.textContent = text;
+          msg.appendChild(bubble);
+          return msg;
+        }
+
+        function sendMessage() {
+          const msg = inputField.value.trim();
+          if (!msg) return;
+          messagesContainer.appendChild(createMessage("user", msg));
+          inputField.value = "";
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+          const typingMsg = createMessage("bot", "⏳ Thinking...");
+          messagesContainer.appendChild(typingMsg);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+          fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: msg })
+          })
+            .then(res => res.json())
+            .then(data => {
+              messagesContainer.removeChild(typingMsg);
+              messagesContainer.appendChild(createMessage("bot", data.reply));
+              messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(err => {
+              messagesContainer.removeChild(typingMsg);
+              messagesContainer.appendChild(createMessage("bot", "⚠ Error: " + err));
+              messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        toggleBtn.addEventListener("click", () => chatWindow.classList.toggle("hidden"));
+        closeBtn.addEventListener("click", () => chatWindow.classList.add("hidden"));
+        sendBtn.addEventListener("click", sendMessage);
+        inputField.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") sendMessage();
+        });
+      }
+
+      initChatbot();
+    });
+  </script>
+</body>
+
+</html>
