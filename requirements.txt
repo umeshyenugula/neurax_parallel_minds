@@ -1,0 +1,14 @@
+flask
+flask-cors
+reportlab
+pillow
+pandas
+numpy
+torch
+torchvision
+torchaudio
+scikit-learn
+ultralytics
+opencv-python
+gTTS
+matplotlib
