@@ -12,3 +12,5 @@ ultralytics
 opencv-python
 gTTS
 matplotlib
+groq
+
