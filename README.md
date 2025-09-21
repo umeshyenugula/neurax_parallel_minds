@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="ParallelMinds/logo.png" alt="NH07 - Parallel Minds Logo" width="200"/>
+  <img src="neurax_parallel_minds/logo.png" alt="NH07 - Parallel Minds Logo" width="200"/>
 </p>
 # **NH07 - Parallel Minds**
 
